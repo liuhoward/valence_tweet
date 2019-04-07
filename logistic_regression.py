@@ -84,8 +84,8 @@ class TextToFeatures:
         # maximum ngram
         self.ngram_max = 2
         # generate features based on texts
-        # self.vectorizer = CountVectorizer(ngram_range=(1, self.ngram_max))
-        self.vectorizer = CountVectorizer()
+        self.vectorizer = CountVectorizer(min_df=3, ngram_range=(1, self.ngram_max))
+        # self.vectorizer = CountVectorizer()
         self.vectorizer.fit(texts)
 
         # number of total features
@@ -152,12 +152,13 @@ def main():
 
     to_feature = TextToFeatures(train_tweet)
 
-    cls = LogisticRegression(random_state=0, solver='lbfgs')
+    cls = LogisticRegression(random_state=0, multi_class='ovr', solver='lbfgs', class_weight='balanced', C=0.58)
     cls.fit(X=to_feature(train_tweet), y=train_label)
 
     print('accuracy: {}'.format(cls.score(X=to_feature(dev_tweet), y=dev_label)))
     y_pred = cls.predict(to_feature(dev_tweet))
-    print('correlation: {}'.format(matthews_corrcoef(y_true=dev_label, y_pred=y_pred)))
+    corr = matthews_corrcoef(y_true=dev_label, y_pred=y_pred)
+    print('correlation: {}'.format(corr))
 
     y_pred = cls.predict(to_feature(test_tweet))
     save_prediction(test_id, test_tweet, test_dimesion, y_pred, pred_data)
