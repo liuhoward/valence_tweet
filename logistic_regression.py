@@ -63,7 +63,7 @@ def read_test(src_file: str):
             dimension_list.append(dimension)
             tweet_list.append(tweet)
 
-    return id_list, dimension_list, tweet_list
+    return id_list, tweet_list, dimension_list
 
 
 class TextToFeatures:
