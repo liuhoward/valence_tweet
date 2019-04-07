@@ -13,8 +13,6 @@ import csv
 from sklearn.metrics import matthews_corrcoef
 from sklearn.metrics import accuracy_score
 
-NDArray = Union[np.ndarray, spmatrix]
-
 
 def read_train(src_file: str):
     """Generates (id, tweet, dimension, score) tuples from the lines in an src file.
@@ -100,7 +98,7 @@ class TextToFeatures:
         """
         return self.vectorizer.vocabulary_[feature]
 
-    def __call__(self, texts: Iterable[Text]) -> NDArray:
+    def __call__(self, texts: Iterable[Text]):
         """Creates a feature matrix from a sequence of texts.
 
         Each row of the matrix corresponds to one of the input texts. The value
