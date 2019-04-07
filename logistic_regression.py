@@ -11,6 +11,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 import csv
 from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import accuracy_score
 
 NDArray = Union[np.ndarray, spmatrix]
 
@@ -155,8 +156,9 @@ def main():
     cls = LogisticRegression(random_state=0, multi_class='ovr', solver='lbfgs', class_weight='balanced', C=0.58)
     cls.fit(X=to_feature(train_tweet), y=train_label)
 
-    print('accuracy: {}'.format(cls.score(X=to_feature(dev_tweet), y=dev_label)))
     y_pred = cls.predict(to_feature(dev_tweet))
+    accuracy = accuracy_score(y_true=dev_label, y_pred=y_pred)
+    print('accuracy: {}'.format(accuracy))
     corr = matthews_corrcoef(y_true=dev_label, y_pred=y_pred)
     print('correlation: {}'.format(corr))
 
