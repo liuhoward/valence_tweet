@@ -49,6 +49,7 @@ def read_test(src_file: str):
     :return:
     """
     id_list = list()
+    dimension_list = list()
     tweet_list = list()
     with open(src_file) as fp:
         reader = csv.DictReader(fp, delimiter='\t')
@@ -59,9 +60,10 @@ def read_test(src_file: str):
             if dimension != 'valence':
                 print(record_id)
             id_list.append(record_id)
+            dimension_list.append(dimension)
             tweet_list.append(tweet)
 
-    return id_list, tweet_list
+    return id_list, dimension_list, tweet_list
 
 
 class TextToFeatures:
@@ -80,9 +82,9 @@ class TextToFeatures:
         :param texts: The training texts.
         """
         # maximum ngram
-        #self.ngram_max = 3
+        self.ngram_max = 2
         # generate features based on texts
-        # self.vectorizer = CountVectorizer(min_df=0, ngram_range=(1, self.ngram_max))
+        # self.vectorizer = CountVectorizer(ngram_range=(1, self.ngram_max))
         self.vectorizer = CountVectorizer()
         self.vectorizer.fit(texts)
 
@@ -115,40 +117,23 @@ class TextToFeatures:
         return self.vectorizer.transform(texts)
 
 
-class Classifier:
-    def __init__(self):
-        """Initalizes a logistic regression classifier.
-        """
-        # logistic regression model
-        self.clf = LogisticRegression(random_state=0, solver='lbfgs')
+def save_prediction(id_list, tweet_list, dimension_list, label_list, dst_file):
+    """
+        save predicted labels
 
-    def train(self, features: NDArray, labels) -> None:
-        """Trains the classifier using the given training examples.
+    :param id_list:
+    :param tweet_list:
+    :param dimension_list:
+    :param label_list:
+    :param dst_file:
+    :return:
+    """
 
-        :param features: A feature matrix, where each row represents a text.
-        Such matrices will typically be generated via TextToFeatures.
-        :param labels: A label vector, where each entry represents a label.
-        Such vectors will typically be generated via TextToLabels.
-        """
-        # train model
-        self.clf.fit(X=features, y=labels)
-
-    def predict(self, features: NDArray) -> NDArray:
-        """Makes predictions for each of the given examples.
-
-        :param features: A feature matrix, where each row represents a text.
-        Such matrices will typically be generated via TextToFeatures.
-        :return: A prediction vector, where each entry represents a label.
-        """
-        # predict
-        return self.clf.predict(X=features)
-
-    def evaluate(self, features:NDArray, labels:NDArray) -> None:
-        """evaluate performance on testing data"""
-
-        print(self.clf.score(X=features, y=labels))
-        y_pred = self.clf.predict(features)
-        print(matthews_corrcoef(y_true=labels, y_pred=y_pred))
+    head = 'ID\tTweet\tAffect Dimension\tIntensity Class\n'
+    with open(dst_file, 'w') as fp:
+        fp.write(head)
+        for i in range(len(id_list)):
+            fp.write('{}\t{}\t{}\t{}\n'.format(id_list[i], tweet_list[i], dimension_list[i], label_list[i]))
 
 
 def main():
@@ -157,21 +142,25 @@ def main():
     train_data = data_path + '2018-Valence-oc-En-train.txt'
     dev_data = data_path + '2018-Valence-oc-En-dev.txt'
     test_data = data_path + '2018-Valence-oc-En-test.txt'
+    pred_data = data_path + 'V-oc_en_pred.txt'
 
     train_id, train_tweet, train_label = read_train(train_data)
 
     dev_id, dev_tweet, dev_label = read_train(dev_data)
 
-    test_id, test_tweet = read_test(test_data)
+    test_id, test_tweet, test_dimesion = read_test(test_data)
 
     to_feature = TextToFeatures(train_tweet)
 
     cls = LogisticRegression(random_state=0, solver='lbfgs')
     cls.fit(X=to_feature(train_tweet), y=train_label)
 
-    print(cls.score(X=to_feature(dev_tweet), y=dev_label))
+    print('accuracy: {}'.format(cls.score(X=to_feature(dev_tweet), y=dev_label)))
     y_pred = cls.predict(to_feature(dev_tweet))
-    print(matthews_corrcoef(y_true=dev_label, y_pred=y_pred))
+    print('correlation: {}'.format(matthews_corrcoef(y_true=dev_label, y_pred=y_pred)))
+
+    y_pred = cls.predict(to_feature(test_tweet))
+    save_prediction(test_id, test_tweet, test_dimesion, y_pred, pred_data)
 
 
 if __name__ == "__main__":
