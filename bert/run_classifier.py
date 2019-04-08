@@ -403,7 +403,7 @@ class ValenceProcessor(DataProcessor):
       # Only the test set has a header
       if i == 0:
         continue
-      guid = line[0]
+      guid = tokenization.convert_to_unicode(line[0])
       text_a = tokenization.convert_to_unicode(line[1])
       if set_type == "test":
         label = "0"
