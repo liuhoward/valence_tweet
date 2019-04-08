@@ -14,6 +14,8 @@ from sklearn.metrics import matthews_corrcoef
 from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
 import spacy
+from sklearn.svm import SVC
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 nlp = spacy.load('en_core_web_sm')
@@ -100,7 +102,7 @@ class TextToFeatures:
         # maximum ngram
         self.ngram_max = 2
         # generate features based on texts
-        self.vectorizer = CountVectorizer(min_df=3, ngram_range=(1, self.ngram_max), tokenizer=my_tokenizer)
+        self.vectorizer = TfidfVectorizer(min_df=3, ngram_range=(1, self.ngram_max), tokenizer=my_tokenizer)
         # self.vectorizer = CountVectorizer()
         self.vectorizer.fit(texts)
 
