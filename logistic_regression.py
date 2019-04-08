@@ -12,6 +12,11 @@ from sklearn.linear_model import LogisticRegression
 import csv
 from sklearn.metrics import matthews_corrcoef
 from sklearn.metrics import accuracy_score
+from xgboost import XGBClassifier
+import spacy
+
+
+nlp = spacy.load('en_core_web_sm')
 
 
 def read_train(src_file: str):
@@ -65,6 +70,18 @@ def read_test(src_file: str):
     return id_list, tweet_list, dimension_list
 
 
+def my_tokenizer(text):
+
+    if text is None:
+        return None
+
+    doc = nlp(text)
+
+    ret = [token.lemma_ for token in doc]
+
+    return ret
+
+
 class TextToFeatures:
     def __init__(self, texts: Iterable[Text]):
         """Initializes an object for converting texts to features.
@@ -83,7 +100,7 @@ class TextToFeatures:
         # maximum ngram
         self.ngram_max = 2
         # generate features based on texts
-        self.vectorizer = CountVectorizer(min_df=3, ngram_range=(1, self.ngram_max))
+        self.vectorizer = CountVectorizer(min_df=3, ngram_range=(1, self.ngram_max), tokenizer=my_tokenizer)
         # self.vectorizer = CountVectorizer()
         self.vectorizer.fit(texts)
 
@@ -151,7 +168,12 @@ def main():
 
     to_feature = TextToFeatures(train_tweet)
 
-    cls = LogisticRegression(random_state=0, multi_class='ovr', solver='lbfgs', class_weight='balanced', C=0.58)
+    cls = LogisticRegression(random_state=0, multi_class='auto', solver='lbfgs', class_weight='balanced', C=0.62, max_iter=300)
+    #cls = XGBClassifier(max_depth=8, learning_rate=0.001, n_estimators=200, objective='binary:logistic',
+    #                    booster='gbtree', n_jobs=8, gamma=0, min_child_weight=1,
+    #                    max_delta_step=0, subsample=1, colsample_bytree=1, colsample_bylevel=1,
+    #                    colsample_bynode=1, reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
+    #                    base_score=0.5, random_state=0)
     cls.fit(X=to_feature(train_tweet), y=train_label)
 
     y_pred = cls.predict(to_feature(dev_tweet))
