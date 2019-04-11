@@ -153,9 +153,7 @@ def save_prediction(id_list, tweet_list, dimension_list, label_list, dst_file):
         for i in range(len(id_list)):
             fp.write('{}\t{}\t{}\t{}\n'.format(id_list[i], tweet_list[i], dimension_list[i], label_list[i]))
 
-
-def main():
-
+def run_lg():
     data_path = 'data/'
     train_data = data_path + '2018-Valence-oc-En-train.txt'
     dev_data = data_path + '2018-Valence-oc-En-dev.txt'
@@ -170,8 +168,9 @@ def main():
 
     to_feature = TextToFeatures(train_tweet)
 
-    cls = LogisticRegression(random_state=0, multi_class='auto', solver='lbfgs', class_weight='balanced', C=0.62, max_iter=300)
-    #cls = XGBClassifier(max_depth=8, learning_rate=0.001, n_estimators=200, objective='binary:logistic',
+    cls = LogisticRegression(random_state=0, multi_class='auto', solver='lbfgs', class_weight='balanced', C=0.62,
+                             max_iter=300)
+    # cls = XGBClassifier(max_depth=8, learning_rate=0.001, n_estimators=200, objective='binary:logistic',
     #                    booster='gbtree', n_jobs=8, gamma=0, min_child_weight=1,
     #                    max_delta_step=0, subsample=1, colsample_bytree=1, colsample_bylevel=1,
     #                    colsample_bynode=1, reg_alpha=0, reg_lambda=1, scale_pos_weight=1,
@@ -186,6 +185,11 @@ def main():
 
     y_pred = cls.predict(to_feature(test_tweet))
     save_prediction(test_id, test_tweet, test_dimesion, y_pred, pred_data)
+
+
+def main():
+
+    run_lg()
 
 
 if __name__ == "__main__":
