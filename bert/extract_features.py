@@ -26,6 +26,7 @@ import re
 import modeling
 import tokenization
 import tensorflow as tf
+import numpy as np
 
 flags = tf.flags
 
@@ -384,30 +385,14 @@ def main(_):
   input_fn = input_fn_builder(
       features=features, seq_length=FLAGS.max_seq_length)
 
-  with codecs.getwriter("utf-8")(tf.gfile.Open(FLAGS.output_file,
-                                               "w")) as writer:
-    for result in estimator.predict(input_fn, yield_single_examples=True):
-      unique_id = int(result["unique_id"])
-      feature = unique_id_to_feature[unique_id]
-      output_json = collections.OrderedDict()
-      output_json["linex_index"] = unique_id
-      all_features = []
-      for (i, token) in enumerate(feature.tokens):
-        all_layers = []
-        for (j, layer_index) in enumerate(layer_indexes):
-          layer_output = result["layer_output_%d" % j]
-          layers = collections.OrderedDict()
-          layers["index"] = layer_index
-          layers["values"] = [
-              round(float(x), 6) for x in layer_output[i:(i + 1)].flat
-          ]
-          all_layers.append(layers)
-        features = collections.OrderedDict()
-        features["token"] = token
-        features["layers"] = all_layers
-        all_features.append(features)
-      output_json["features"] = all_features
-      writer.write(json.dumps(output_json) + "\n")
+  output_json = dict()#collections.OrderedDict()
+  for result in estimator.predict(input_fn, yield_single_examples=True):
+    unique_id = str(result["unique_id"])
+    # pick last layer output
+    j = 0
+    layer_output = result["layer_output_%d" % j]
+    output_json[unique_id] = np.array(layer_output)
+  np.savez_compressed(file=FLAGS.output_file, **output_json)
 
 
 if __name__ == "__main__":
