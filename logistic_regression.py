@@ -189,29 +189,9 @@ def run_lg():
     save_prediction(test_id, test_tweet, test_dimesion, y_pred, pred_data)
 
 
-def gen_bert_predict():
-    data_path = 'data/'
-    test_data = data_path + '2018-Valence-oc-En-test.txt'
-    pred_data = data_path + 'V-oc_en_pred.txt'
-
-    test_id, test_tweet, test_dimesion = read_test(test_data)
-
-    y_pred = list()
-    bert_result_file = 'output/test_results.tsv'
-    with open(bert_result_file, 'r') as fp:
-        for line in fp:
-            parts = line.replace('\n', '').split('\t')
-            row = [float(x.strip()) for x in parts]
-            label = np.argmax(row) - 3
-            y_pred.append(label)
-
-    save_prediction(test_id, test_tweet, test_dimesion, y_pred, pred_data)
-
-
 def main():
 
-    # run_lg()
-    gen_bert_predict()
+    run_lg()
 
 
 if __name__ == "__main__":
