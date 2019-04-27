@@ -388,10 +388,12 @@ def main(_):
   output_json = dict()#collections.OrderedDict()
   for result in estimator.predict(input_fn, yield_single_examples=True):
     unique_id = str(result["unique_id"])
+    feature = unique_id_to_feature[int(unique_id)]
+    token_num = len(feature.tokens)
     # pick last layer output
     j = 0
     layer_output = result["layer_output_%d" % j]
-    output_json[unique_id] = np.array(layer_output)
+    output_json[unique_id] = np.array(layer_output[0:token_num])
   np.savez_compressed(file=FLAGS.output_file, **output_json)
 
 
