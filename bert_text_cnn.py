@@ -254,7 +254,7 @@ epochs = 100
 #squeezed = layers.Lambda(lambda x: K.squeeze(x[:, 0:1, :], axis=1))(bert_output)
 
 filter_sizes = [2,3,4]
-num_filters = 256
+num_filters = 128
 
 #############################
 ## build text cnn model
@@ -288,7 +288,7 @@ output = layers.Dense(units=7, activation='softmax',
 # this creates a model that includes
 model = models.Model(inputs=bert_model.inputs, outputs=output)
 
-opt = optimizers.Adam(lr=1e-5, decay=1e-6)
+opt = optimizers.Adam(lr=1e-4) ##, decay=1e-6)
 #opt = optimizers.SGD(lr=1e-4)
 
 model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
