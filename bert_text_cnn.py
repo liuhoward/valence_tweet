@@ -243,7 +243,7 @@ bert_model = load_trained_model_from_checkpoint(config_file, checkpoint_file, tr
 bert_output = bert_model.get_layer(name='Encoder-12-FeedForward-Norm').output
 
 embedding_dim = 768
-batch_size = 32
+batch_size = 64
 drop = 0.9
 
 epochs = 100
@@ -277,8 +277,8 @@ for i, filter_size in enumerate(filter_sizes):
 concatenated_tensor = layers.Concatenate(axis=1)(pooled_outputs)
 flatten = layers.Flatten()(concatenated_tensor)
 #flatten1 = layers.Dense(units=128, activation='relu',
-#                        kernel_initializer=initializers.truncated_normal(stddev=0.02), 
-#                        kernel_regularizer=regularizers.l2(0.1))(flatten)
+#                        kernel_initializer=initializers.truncated_normal(stddev=0.02),
+#                        kernel_regularizer=regularizers.l2(0.01))(flatten)
 
 dropout = layers.Dropout(drop)(flatten)
 output = layers.Dense(units=7, activation='softmax', 
@@ -329,7 +329,7 @@ plt.title('Model loss')
 plt.ylabel('loss')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Dev'], loc='upper left')
-plt.savefig(data_path + 'text_cnn_loss.pdf', dpi=1000)
+plt.savefig('text_cnn_loss.pdf', dpi=1000)
 
 
 y_pred = model.predict([test_input_ids, test_input_masks, test_segment_ids], batch_size=16)
