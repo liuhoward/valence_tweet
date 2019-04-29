@@ -254,7 +254,7 @@ epochs = 100
 #squeezed = layers.Lambda(lambda x: K.squeeze(x[:, 0:1, :], axis=1))(bert_output)
 
 filter_sizes = [2,3,4]
-num_filters = 128
+num_filters = 256
 
 #############################
 ## build text cnn model
@@ -276,11 +276,11 @@ for i, filter_size in enumerate(filter_sizes):
 
 concatenated_tensor = layers.Concatenate(axis=1)(pooled_outputs)
 flatten = layers.Flatten()(concatenated_tensor)
-#flatten1 = layers.Dense(units=128, activation='relu',
-#                        kernel_initializer=initializers.truncated_normal(stddev=0.02),
-#                        kernel_regularizer=regularizers.l2(0.01))(flatten)
+flatten1 = layers.Dense(units=128, activation='relu',
+                        kernel_initializer=initializers.truncated_normal(stddev=0.02),
+                        kernel_regularizer=regularizers.l2(0.01))(flatten)
 
-dropout = layers.Dropout(drop)(flatten)
+dropout = layers.Dropout(drop)(flatten1)
 output = layers.Dense(units=7, activation='softmax', 
                       kernel_initializer=initializers.truncated_normal(stddev=0.02), 
                       kernel_regularizer=regularizers.l2(0.01))(dropout)
