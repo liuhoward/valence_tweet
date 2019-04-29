@@ -269,7 +269,7 @@ for i, filter_size in enumerate(filter_sizes):
                                kernel_size=(filter_sizes[i], embedding_dim), 
                                padding='valid', 
                                kernel_initializer='glorot_uniform', 
-                               kernel_regularizer=regularizers.l2(0.1), activation='relu')(reshape_data)
+                               kernel_regularizer=regularizers.l2(0.01), activation='relu')(reshape_data)
     bn_layer = layers.BatchNormalization()(conv_layer)
     pool_layer = layers.MaxPool2D(pool_size=(sequence_length - filter_sizes[i] + 1, 1), strides=(1,1), padding='valid')(bn_layer)
     pooled_outputs.append(pool_layer)
@@ -283,12 +283,12 @@ flatten = layers.Flatten()(concatenated_tensor)
 dropout = layers.Dropout(drop)(flatten)
 output = layers.Dense(units=7, activation='softmax', 
                       kernel_initializer=initializers.truncated_normal(stddev=0.02), 
-                      kernel_regularizer=regularizers.l2(0.1))(dropout)
+                      kernel_regularizer=regularizers.l2(0.01))(dropout)
 
 # this creates a model that includes
 model = models.Model(inputs=bert_model.inputs, outputs=output)
 
-opt = optimizers.Adam(lr=1e-4) ##, decay=1e-6)
+opt = optimizers.Adam(lr=1e-4, decay=1e-6)
 #opt = optimizers.SGD(lr=1e-4)
 
 model.compile(optimizer=opt, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
