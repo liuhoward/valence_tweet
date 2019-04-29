@@ -254,7 +254,7 @@ epochs = 100
 #squeezed = layers.Lambda(lambda x: K.squeeze(x[:, 0:1, :], axis=1))(bert_output)
 
 filter_sizes = [2,3,4]
-num_filters = 512
+num_filters = 256
 
 #############################
 ## build text cnn model
