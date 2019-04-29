@@ -321,8 +321,15 @@ plt.title('Model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Dev'], loc='upper left')
-#plt.show()
-plt.savefig('accuracy.pdf', dpi=1000)
+plt.savefig('text_cnn_accuracy.pdf', dpi=1000)
+
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
+plt.ylabel('loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Dev'], loc='upper left')
+plt.savefig(data_path + 'text_cnn_loss.pdf', dpi=1000)
 
 
 y_pred = model.predict([test_input_ids, test_input_masks, test_segment_ids], batch_size=16)
