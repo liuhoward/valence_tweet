@@ -277,14 +277,14 @@ for i, filter_size in enumerate(filter_sizes):
 concatenated_tensor = layers.Concatenate(axis=1)(pooled_outputs)
 flatten = layers.Flatten()(concatenated_tensor)
 flatten1 = layers.Dense(units=128, activation='relu',
-                        #kernel_initializer='glorot_uniform',
-                        kernel_initializer=initializers.truncated_normal(stddev=0.02),
+                        kernel_initializer='glorot_uniform',
+                        #kernel_initializer=initializers.truncated_normal(stddev=0.02),
                         kernel_regularizer=regularizers.l2(0.01))(flatten)
 
 dropout = layers.Dropout(drop)(flatten1)
 output = layers.Dense(units=7, activation='softmax', 
-                      #kernel_initializer='glorot_uniform',
-                      kernel_initializer=initializers.truncated_normal(stddev=0.02),
+                      kernel_initializer='glorot_uniform',
+                      #kernel_initializer=initializers.truncated_normal(stddev=0.02),
                       kernel_regularizer=regularizers.l2(0.01))(dropout)
 
 # this creates a model that includes
