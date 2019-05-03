@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#PBS -N valence
+
+#PBS -W group_list=xxx
+###PBS -q windfall
+#PBS -q standard
+
+#PBS -l select=1:ncpus=1:mem=40gb:ngpus=1
+
+#PBS -l walltime=2:0:0
+#PBS -l cput=2:00:00
+#PBS -l place=free:shared
+
+module load singularity
+cd ~/work/valence_tweet/
+singularity exec --cleanenv --nv /extra/liuhao16/work/tf1.12_bert.sif python bert_text_cnn.py
