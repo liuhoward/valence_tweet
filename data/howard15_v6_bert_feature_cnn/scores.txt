@@ -1,0 +1,9 @@
+
+kappa_oc_valence_en:0.656784696013
+
+r_some_oc_valence_en:0.718957399746
+
+kappa_some_oc_valence_en:0.702354672753
+
+r_oc_valence_en:0.666332289068
+
